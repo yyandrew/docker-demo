@@ -1,0 +1,28 @@
+version: '3'
+services:
+  # 准备postgresql服务
+  db:
+    image: postgres:10.5-alpine
+    # 将数据库服务的5432端口映射到主机的5432端口
+    ports:
+      - 5432:5432
+    # 设置数据库服务和主机的共享目录
+    volumes:
+      - ./tmp/postgres_data:/var/lib/postgresql/data
+    # 设置PostgresQL数据库用户密码
+    environment:
+      POSTGRES_PASSWORD: password
+  web:
+    # 构建web容器
+    build: .
+    # 启动Rails服务器
+    command: /bin/bash -c "rm -f /tmp/server.pid && bundle exec rails server -b 0.0.0.0 -P /tmp/server.pid"
+    # 将web服务的3000端口映射到主机的3000端口,这样在主机的的浏览器可以访问http://localhost:3000
+    ports:
+      - 3000:3000
+    # 依赖数据库服务
+    depends_on:
+      - db
+    # 设置web服务的共享目录
+    volumes:
+      - .:/app
