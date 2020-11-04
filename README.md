@@ -18,4 +18,4 @@ docker-compose up
 # 停止所有服务
 docker-compose down
 ```
-Open [localhost:3000](http://localhost:3000)
+Open [localhost](http://localhost)

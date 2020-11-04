@@ -15,14 +15,15 @@ services:
   web:
     # 构建web容器
     build: .
-    # 启动Rails服务器
-    command: /bin/bash -c "rm -f /tmp/server.pid && bundle exec rails server -b 0.0.0.0 -P /tmp/server.pid"
     # 将web服务的3000端口映射到主机的3000端口,这样在主机的的浏览器可以访问http://localhost:3000
+    environment:
+      # 设置Rails服务器运行环境为development
+      PASSENGER_APP_ENV: development
     ports:
-      - 3000:3000
+      - 80:80
     # 依赖数据库服务
     depends_on:
       - db
     # 设置web服务的共享目录
     volumes:
-      - .:/app
+      - .:/home/app/webapp
