@@ -11,6 +11,8 @@ RUN apt-get update && apt-get install -y \
   echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
   apt-get update && apt-get install -y nodejs yarn
 
+RUN apt-get update && apt-get install -y netcat
+
 # 配置nginx
 RUN rm -f /etc/service/nginx/down
 RUN rm /etc/nginx/sites-enabled/default

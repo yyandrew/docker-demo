@@ -1,5 +1,12 @@
 version: '3'
 services:
+  setup_db:
+    build: .
+    entrypoint: ./setup_db.sh
+    depends_on:
+      - db
+    volumes:
+      - .:/home/app/webapp
   # 准备postgresql服务
   db:
     image: postgres:10.5-alpine
@@ -12,6 +19,8 @@ services:
     # 设置PostgresQL数据库用户密码
     environment:
       POSTGRES_PASSWORD: password
+      DISABLE_DATABASE_ENVIRONMENT_CHECK: 1
+      PASSENGER_APP_ENV: development
   web:
     # 构建web容器
     build: .
@@ -24,6 +33,7 @@ services:
     # 依赖数据库服务
     depends_on:
       - db
+      - setup_db
     # 设置web服务的共享目录
     volumes:
       - .:/home/app/webapp
