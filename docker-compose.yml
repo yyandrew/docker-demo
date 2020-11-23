@@ -1,0 +1,27 @@
+version: "3.8"
+networks:
+  vpcbr:
+    ipam:
+     config:
+       - subnet: 172.20.0.0/24
+services:
+  pg_master:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_PASSWORD: 'andrew123'
+    ports:
+      - '54321:5432'
+    networks:
+      vpcbr:
+        ipv4_address: 172.20.0.2
+    depends_on:
+      - pg_slave
+  pg_slave:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_PASSWORD: 'andrew123'
+    ports:
+      - '54322:5432'
+    networks:
+      vpcbr:
+        ipv4_address: 172.20.0.3
