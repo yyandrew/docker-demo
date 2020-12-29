@@ -1,0 +1,20 @@
+FROM alpine:3.12.3  as basic
+RUN apk update && \
+    apk add readline-dev zlib-dev && \
+    apk add llvm && \
+    apk add lldb && \
+    apk add tmux vim
+
+FROM basic as builder
+RUN apk update && \
+    apk add build-base
+
+FROM builder as sqlite3
+RUN wget -qO- https://sqlite.org/2020/sqlite-autoconf-3340000.tar.gz | tar xvz -C .
+RUN cd sqlite-autoconf-3340000
+WORKDIR sqlite-autoconf-3340000
+RUN ./configure
+RUN make
+RUN make install
+RUN sqlite3 test.db "CREATE TABLE users (id primary key, name varchar(255));"
+RUN sqlite3 test.db "INSERT INTO users VALUES (1, 'andrew');"
