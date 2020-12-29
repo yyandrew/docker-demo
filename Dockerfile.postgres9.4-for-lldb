@@ -1,0 +1,31 @@
+FROM alpine:3.12.3  as basic
+RUN apk update && \
+    apk add readline-dev zlib-dev && \
+    apk add llvm && \
+    apk add lldb && \
+    apk add tmux vim
+
+FROM basic as builder
+RUN apk update && \
+    apk add build-base
+
+FROM builder as postgres
+RUn wget -qO- https://ftp.postgresql.org/pub/source/v9.4.4/postgresql-9.4.4.tar.bz2 | bzip2 -d | tar x
+RUN cd postgresql-9.4.4
+WORKDIR postgresql-9.4.4
+RUN ./configure --enable-cassert --enable-debug CFLAGS="-ggdb -O0 -fno-omit-frame-pointer"
+RUN make
+RUN make install
+
+RUN adduser postgres -g '' -D &&\
+    mkdir /usr/local/pgsql/data &&\
+    chown postgres /usr/local/pgsql/data
+USER postgres
+RUN /usr/local/pgsql/bin/initdb -D /usr/local/pgsql/data
+# CMD ['/usr/local/pgsql/bin/pg_ctl', '-D', '/usr/local/pgsql/data', 'start']
+
+# FROM postgres as final
+# RUN /usr/local/pgsql/bin/psql -c 'create database test;'
+# RUN /usr/local/pgsql/bin/psql -d test -c 'create table users (id serial PRIMARY KEY, name varchar(255));';
+# RUN /usr/local/pgsql/bin/psql -d test -c 'INSERT INTO users VALUES(1, "andrew");'
+
