@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+    ovpn2socks:
+        cap_add:
+          - NET_ADMIN
+        build: .
+        ports:
+            - 8118:8118
+            - 9118:9118
+            - 58946:58946
+            - 58946:58946/udp
+        volumes:
+            - ~/openvpn/JP-88.ovpn:/config/openvpn/openvpn.ovpn
+            - ~/openvpn/pass1.txt:/config/openvpn/pass.txt
+            - /etc/localtime:/etc/localtime:ro
+        environment:
+              - VPN_ENABLED=yes
+              - VPN_PROV=custom
+              - VPN_CLIENT=openvpn
+              - LAN_NETWORK=10.15.65.0/24,10.15.59.0/25,10.15.58.0/25
+              - NAME_SERVERS=1.1.1.1,8.8.8.8
+              - ENABLE_STARTUP_SCRIPTS=no
+              - ENABLE_PRIVOXY=yes
+              - STRICT_PORT_FORWARD=no
+              - USERSPACE_WIREGUARD=no
+              - ENABLE_SOCKS=yes
+              - DEBUG=false
+              - UMASK=000
+              - PUID=0
+              - PGID=0
+
